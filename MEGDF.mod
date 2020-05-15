@@ -349,10 +349,34 @@ parameters
 //Ecuaciones del modelo
 //********************** *************************  
 model;
+// [A1]
+	u_1t=(P_1t_P/P_Ct-(1+ tau_1t_X)*( ji_1_1* P_1t_P/P_Ct +ji_2_1* P_2t_P/P_Ct +ji_3_1* P_3t_P/P_Ct)-(ji_M_1*(1+ tau_1t_MX)*))*alfa_1*YY_1t/((1-lamda)*K_1t_O(-1))
+// [A2]
+	u_2t=(P_2t_P/P_Ct-(1+ tau_2t_X)*( ji_1_2* P_1t_P/P_Ct +ji_2_2* P_2t_P/P_Ct +ji_3_2* P_3t_P/P_Ct)-(ji_M_2*(1+ tau_2t_MX)*))*alfa_2*YY_2t/((1-lamda)*K_2t_O(-1))
+// [A3]
+	u_3t=(P_3t_P/P_Ct-(1+ tau_3t_X)*( ji_1_3* P_1t_P/P_Ct +ji_2_3* P_2t_P/P_Ct +ji_3_3* P_3t_P/P_Ct)-(ji_M_3*(1+ tau_3t_MX)*))*alfa_3*YY_3t/((1-lamda)*K_3t_O(-1))
+// [A4]
+	W_1t=(P_1t_P/P_Ct-(1+ tau_1t_X)*( ji_1_1* P_1t_P/P_Ct +ji_2_1* P_2t_P/P_Ct +ji_3_1* P_3t_P/P_Ct)-(ji_M_1*(1+ tau_1t_MX)*))*(1-alfa_1)*YY_1t/( lamda*h_1t_NO+(1-lamda)*h_1t_O)
+// [A5]
+	W_2t =(P_2t_P/P_Ct-(1+ tau_2t_X)*( ji_1_2* P_1t_P/P_Ct +ji_2_2* P_2t_P/P_Ct +ji_3_2* P_3t_P/P_Ct)-(ji_M_2*(1+ tau_2t_MX)*))*(1-alfa_2)*YY_2t/( lamda*h_2t_NO+(1-lamda)*h_2t_O)
+// [A6]
+	W_3t =(P_3t_P/P_Ct-(1+ tau_3t_X)*( ji_1_3* P_1t_P/P_Ct +ji_2_3* P_2t_P/P_Ct +ji_3_3* P_3t_P/P_Ct)-(ji_M_3*(1+ tau_3t_MX)*))*(1-alfa_3)*YY_3t/( lamda*h_3t_NO+(1-lamda)*h_3t_O))
+// [A7]
+	YY_1t=A_1*A_t_1*A_t*(K_gt(-1)/[(1-lamda)*(K_1t_O(-1)+K_2t_O(-1)+K_3t_O(-1))]^fi_2)^thita*((1- lamda)*K_1t_O(-1))^alfa_1*(lamda*h_1t_NO+(1-lamda)*h_1t_O)^(1-alfa_1);
+// [A8]
+	YY_2t=A_2*A_t_2*A_t*(K_gt(-1)/[(1-lamda)*(K_1t_O(-1)+K_2t_O(-1)+K_3t_O(-1))]^fi_2)^thita*((1- lamda)*K_2t_O(-1))^alfa_1*(lamda*h_2t_NO+(1-lamda)*h_2t_O)^(1-alfa_2);
+// [A9]
+	YY_3t=A_3*A_t_3*A_t*(K_gt(-1)/[(1-lamda)*(K_1t_O(-1)+K_2t_O(-1)+K_3t_O(-1))]^fi_2)^thita*((1- lamda)*K_3t_O(-1))^alfa_1*(lamda*h_3t_NO+(1-lamda)*h_3t_O)^(1-alfa_1);
 //********************** 
 //Firmas sectoriales
-//**********************  
-// [13] En este tipo de ecuaciones se cancelan los crecimientos y da lo mismo que poner las variables agregadas
+//**********************
+// [A10] En este tipo de ecuaciones se cancelan los crecimientos y da lo mismo que poner las variables agregadas
+	X_11t=ji_1_1* YY_1t;
+// [A11]
+	X_12t=ji_1_2* YY_2t;
+// [A12]
+	X_13t=ji_1_3* YY_3t;
+// [13] 
 	X_21t = ji_2_1 * YY_1t;
 // [14]
 	X_22t = ji_2_2 * YY_2t;
@@ -386,9 +410,29 @@ model;
 	Z_2t = (1 - mi_D) * (A_D) ^ (omega_D - 1) * (P_2t / P_Dt) ^ (-omega_D) * Y_Dt;
 // [31] Una vez definidas las ecuaciones de P_1 y P_2 estacionarizadas atrás, no es necesario hacerlo aquí.
 	P_Dt = (A_D) ^(-1) * (mi_D * (P_1t) ^ (1 - omega_D) + (1 - mi_D) * (P_2t) ^ (1 - omega_D)) ^ (1 / (1 - omega_D));
+// [32]
+	D_It=mi_I*A_I^(omega_I-1)* * (P_Dt / P_It) ^ (-omega_I)*Y_It;
+// [33]
+	M_It = (1 - mi_I) * (A_I) ^ (omega_I - 1) * ((1+tau_IMt)*P_Mt / P_It) ^ (-omega_I) * Y_It;
+// [34]
+	P_It = (A_I) ^(-1) * (mi_I * (P_Dt) ^ (1 - omega_D) + (1 - mi_I) * ((1+tau_IMt)*P_Mt) ^ (1 - omega_I)) ^ (1 / (1 - omega_I));
 //*************************
 //Condiciones de equilibrio
-//*************************	
+//*************************
+
+// [A63]
+	E_Ct=A_X*Yas_t*(1/TCR_t)^(-sigma_2);
+// [A64]
+	E_t=A_E*(E_Ct)^ mi_E*(E_t_oil)^(1-mi_E);
+// [A65]
+	P_Et=(1^mi_E)*(P_t_oilas* TCR_t)^(1-mi_E)
+// [A66]
+	M_t=(M_1t+M_2t+M_3t)+M_Ct+M_It;
+// [A67]
+	BC_t=E_t-M_t=E_Ct+E_t_oil*P_t_oilas* TCR_t-P_Mt*(M_1t+M_2t+M_3t)+M_Ct+M_It);
+//[68]
+	TI_t=P_Et/P_Mt
+
 // [75] En esta ecuación también se cancelan los crecimientos que dividen a ambos lados para estacionarizar, solo hay que dejar el P_Mt en términos del numerario
 	Y_Ct = lamda * C_t_NO + (1 - lamda) * C_t_O + E_Ct + tau_CMt * (P_Mt) * M_Ct;
 // [76]
@@ -562,6 +606,30 @@ model;
 // Tomado de la pg. 60
 	g_t_exo = 0.16;
 	fi_Ct = 1.03;
+// [A1]
+	(1-lamda)* u_1t *K_1t_O /YY_1t=alfa_1*(1-(1+tau_1t_X)*( ji_1_1 +ji_2_1+ji_3_1)-(ji_M_1*(1+ tau_1t_MX));
+// [A2]
+	(1-lamda)*u_2t*K_2t_O/YY_2t=alfa_2*(1-(1+tau_2t_X)*(ji_1_2+ji_2_2+ji_3_2)-(ji_M_2*(1+ tau_2t_MX));
+// [A3]
+	(1-lamda)*u_3t*K_3t_O/YY_1t=alfa_3*(1-(1+tau_3t_X)*(ji_1_3+ji_2_3+ji_3_3)-(ji_M_3*(1+ tau_3t_MX));
+// [A4]
+	(lamda*h_1t_NO+(1-lamda)*h_1t_O)*W_1t/YY_1t=(1-alfa_1)*(1-(1+tau_1t_X)*(ji_1_1+ji_2_1+ji_3_1)-(ji_M_1*(1+tau_1t_MX));
+// [A5]
+	(lamda*h_2t_NO+(1-lamda)*h_2t_O)*W_2t/YY_2t=(1-alfa_2)*(1-(1+tau_2t_X)*(ji_1_2+ji_2_2+ji_3_2)-(ji_M_2*(1+ tau_2t_MX));
+// [A6]
+	(lamda*h_3t_NO+(1-lamda)*h_3t_O)*W_3t/YY_3t=(1-alfa_3)*(1-(1+tau_3t_X)*(ji_1_3+ji_2_3+ji_3_3)-(ji_M_3*(1+ tau_3t_MX));
+// [A7]
+	YY_1t=A_1*(K_gt/[(1-lamda)*(K_1t_O+K_2t_O+K_3t_O)]^fi_2)^thita*((1- lamda)*K_1t_O)^alfa_1*(lamda*h_1t_NO+(1-lamda)*h_1t_O)^(1-alfa_1);
+// [A8]
+	YY_2t=A_2*(K_gt/[(1-lamda)*(K_1t_O+K_2t_O+K_3t_O)]^fi_2)^thita*((1- lamda)*K_2t_O)^alfa_2*(lamda*h_2t_NO+(1-lamda)*h_2t_O)^(1-alfa_2);
+// [A9]
+	YY_3t=A_3*(K_gt/[(1-lamda)*(K_1t_O+K_2t_O+K_3t_O)]^fi_2)^thita*((1- lamda)*K_3t_O)^alfa_3*(lamda*h_3t_NO+(1-lamda)*h_3t_O)^(1-alfa_3);
+// [A10]
+	X_11t=ji_1_1* YY_1t;
+// [A11]
+	X_12t=ji_1_2* YY_2t;
+// [A12]
+	X_13t=ji_1_3* YY_3t;
 // [A13]
 	X_21t = ji_2_1 * YY_1t;
 // [A14]
@@ -589,6 +657,22 @@ model;
 	Z_2t = (1 - mi_D) * (A_D) ^ (omega_D - 1) * Y_Dt;
 // [A30]
 	1 = (A_D) ^(-1) * (mi_D * (P_1t) ^ (1 - omega_D) + (1 - mi_D) * (P_2t) ^ (1 - omega_D)) ^ (1 / (1 - omega_D));
+// [A31]
+	D_it=mi_I*A_I^(omega_I-1)*Y_It;
+// [A32]
+	M_It=(1-mi_I)*A_I^(omega_I)*(1+tau_IMt)^-omega_I*Y_It;
+// [A33]
+	1=A_I^-1[mi_I*(1)^(1-omega_I)+(1-mi_I)*(1+tau_IMt)^(1-omega_I)]^(1/1-omega_i);
+
+// [A62]
+	E_Ct=A_X;
+// [A63]
+	E_t=A_E*(E_Ct)^ mi_E*(E_t_oil)^(1-mi_E);
+// [A64]
+	M_t=(M_1t+M_2t+M_3t)+M_Ct+M_It;
+// [A65]
+	BC_t=E_t-M_t=E_Ct+E_t_oil-(M_1t+M_2t+M_3t)+M_Ct+M_It);
+
 // [A69] 
 	Y_Ct = lamda * C_t_NO + (1 - lamda) * C_t_O + E_Ct + tau_CMt * M_Ct;
 // [A70]
